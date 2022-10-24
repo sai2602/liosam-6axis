@@ -1,0 +1,28 @@
+<launch>
+    <arg name="project" default="lio_sam_6axis"/>
+    <arg name="bag_path" default="/media/sai/SSD_2TB/bag_files/rosbag_filter/2022-10-07-13-23-22.bag"/>
+    <arg name="sequence" default="hkust_CAMPUS"/>
+
+    <!-- Parameters -->
+    <!--    <rosparam file="$(find lio_sam_6axis)/config/params_ouster.yaml" command="load"/>-->
+    <rosparam file="$(find lio_sam_6axis)/config/params_vlp.yaml" command="load"/>
+
+    <!--- LOAM -->
+    <param name="saveDirectory" type="string" value="$(find lio_sam_6axis)/data/"/>
+    <param name="configDirectory" type="string" value="$(find lio_sam_6axis)/config/"/>
+    <rosparam param="sequence" subst_value="true">$(arg sequence)</rosparam>
+    <include file="$(find lio_sam_6axis)/launch/include/module_loam.launch"/>
+
+    <!--- Robot State TF -->
+    <include file="$(find lio_sam_6axis)/launch/include/module_robot_state_publisher.launch"/>
+
+    <!--- Run Navsat -->
+    <node pkg="lio_sam_6axis" type="lio_sam_6axis_gpsOdometry" name="lio_sam_6axis_gpsOdometry"/>
+
+    <!--- Run Rviz-->
+    <node pkg="rviz" type="rviz" name="$(arg project)_rviz"
+          args="-d $(find lio_sam_6axis)/launch/include/config/vlp.rviz"/>
+
+
+
+</launch>
